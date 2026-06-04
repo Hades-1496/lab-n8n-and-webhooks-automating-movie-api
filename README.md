@@ -328,7 +328,9 @@ Envía el mismo evento dos veces (mismo `event_id`):
 ### Paso 7: Iniciar n8n
 
 ```bash
-n8n start
+# Debes permitir el módulo nativo 'crypto' para poder firmar las peticiones
+# (En PowerShell usa: $env:NODE_FUNCTION_ALLOW_BUILTIN="crypto"; n8n start)
+NODE_FUNCTION_ALLOW_BUILTIN=crypto n8n start
 ```
 
 Abre `http://localhost:5678` en el navegador. Si es la primera vez, crea una cuenta (solo local).
@@ -355,7 +357,9 @@ Conecta al Webhook y añade un nodo **"Code"**:
 const items = $input.all()
 
 return items.map(item => {
-  const { titulo, anio, nota, director, genero } = item.json
+  // Extraemos los datos dependiendo de si n8n los envolvió en "body"
+  const payload = item.json.body || item.json
+  const { titulo, anio, nota, director, genero } = payload
 
   // Validación
   if (!titulo || !anio) {
